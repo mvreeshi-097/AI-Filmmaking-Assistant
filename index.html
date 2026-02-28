@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MOVIEAI – Filmmaker Toolkit</title>
+
+    <!-- Elegant Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Playfair+Display:wght@400;600&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Playfair Display', serif;
+            color: #2b2b2b;
+            overflow-x: hidden;
+            background: linear-gradient(-45deg, #f5e6c8, #f8f1dc, #efe2c0, #f5e6c8);
+            background-size: 400% 400%;
+            animation: gradientFlow 12s ease infinite;
+        }
+
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(212,175,55,0.3), transparent 70%);
+            top: -150px;
+            right: -150px;
+            animation: floatGlow 6s ease-in-out infinite alternate;
+            z-index: -1;
+        }
+
+        @keyframes floatGlow {
+            from { transform: translateY(0px); }
+            to { transform: translateY(40px); }
+        }
+
+        .container {
+            width: 92%;
+            max-width: 1000px;
+            margin: 60px auto;
+            padding: 60px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.65);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow:
+                0 30px 80px rgba(0,0,0,0.15),
+                inset 0 0 20px rgba(212,175,55,0.15);
+            animation: fadeSlide 1s ease-out;
+        }
+
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            text-align: center;
+            font-family: 'Cinzel', serif;
+            font-size: 52px;
+            letter-spacing: 8px;
+            color: #b8892d;
+            margin-bottom: 40px;
+            text-shadow: 0 4px 20px rgba(212,175,55,0.4);
+        }
+
+        input {
+            width: 100%;
+            padding: 16px;
+            margin: 12px 0;
+            border-radius: 10px;
+            border: 1px solid rgba(0,0,0,0.1);
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.8);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 15px rgba(212,175,55,0.4);
+            transform: scale(1.02);
+        }
+
+        .buttons {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        button {
+            padding: 12px 24px;
+            margin: 8px;
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            background: linear-gradient(135deg, #b8892d, #d4af37);
+            color: white;
+            box-shadow: 0 10px 25px rgba(212,175,55,0.3);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(212,175,55,0.5);
+        }
+
+        button:active { transform: scale(0.96); }
+
+        #output {
+            margin-top: 40px;
+            padding: 35px;
+            border-radius: 15px;
+            background: rgba(255,255,255,0.9);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.7;
+            min-height: 180px;
+            white-space: pre-wrap;
+            box-shadow:
+                0 15px 40px rgba(0,0,0,0.1),
+                inset 0 0 15px rgba(212,175,55,0.15);
+            transition: opacity 0.3s ease;
+        }
+
+        .export-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #2b2b2b, #444);
+            color: #f5e6c8;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .export-btn:hover {
+            background: linear-gradient(135deg, #111, #333);
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>MOVIEAI</h1>
+
+<input type="text" id="main_theme" placeholder="Main Theme (Revenge, Love...)">
+<input type="text" id="setting" placeholder="Setting (1940s Chicago...)">
+<input type="text" id="tone" placeholder="Tone (Noir, Emotional...)">
+
+<div class="buttons">
+    <button onclick="generateModule('character')">Character</button>
+    <button onclick="generateModule('screenplay')">Screenplay</button>
+    <button onclick="generateModule('shots')">Shots</button>
+    <button onclick="generateModule('budget')">Budget</button>
+    <button onclick="generateModule('schedule')">Schedule</button>
+    <button onclick="generateModule('moodboard')">Moodboard</button>
+    <button onclick="generateModule('casting')">Casting</button>
+    <button onclick="generateModule('dialogue')">Dialogue</button>
+
+    <!-- NEW BUTTON -->
+    <button onclick="loadHistory()">View History</button>
+</div>
+
+<div id="output"></div>
+
+<div class="export-container">
+    <button class="export-btn" onclick="exportScreenplay()">Export Screenplay</button>
+</div>
+
+</div>
+
+<script>
+async function generateModule(type) {
+
+    const main_theme = document.getElementById("main_theme").value;
+    const setting = document.getElementById("setting").value;
+    const tone = document.getElementById("tone").value;
+
+    const output = document.getElementById("output");
+    output.style.opacity = 0.4;
+
+    const response = await fetch("/generate-module", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            type: type,
+            inputs: { main_theme, setting, tone }
+        })
+    });
+
+    const data = await response.json();
+
+    setTimeout(() => {
+        output.innerText = data.result;
+        output.style.opacity = 1;
+    }, 300);
+}
+
+async function loadHistory() {
+
+    const output = document.getElementById("output");
+    output.style.opacity = 0.4;
+
+    const response = await fetch("/history");
+    const data = await response.json();
+
+    let formattedHistory = "🎬 SAVED PROJECTS\n\n";
+
+    data.history.forEach((item, index) => {
+        formattedHistory += `Project ${index + 1}\n`;
+        formattedHistory += "----------------------------\n";
+        formattedHistory += item.result + "\n\n";
+    });
+
+    setTimeout(() => {
+        output.innerText = formattedHistory;
+        output.style.opacity = 1;
+    }, 300);
+}
+
+async function exportScreenplay() {
+    const content = document.getElementById("output").innerText;
+
+    const response = await fetch("/export-screenplay", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content })
+    });
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "screenplay.txt";
+    a.click();
+}
+</script>
+
+</body>
+</html>
